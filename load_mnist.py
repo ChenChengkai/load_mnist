@@ -67,9 +67,13 @@ print(f'num of testing data {len(testing_dataset)}')
 img, label = training_dataset[0]
 plt.imshow(img)
 plt.title(f'training label is {label}')
+plt.savefig(f'./pic/train_{label}.jpg', format='jpeg')
 plt.show()
+plt.close()
 
 img, label = testing_dataset[0]
 plt.imshow(img)
 plt.title(f'testing label is {label}')
+plt.savefig(f'./pic/test_{label}.jpg', format='jpeg')
 plt.show()
+plt.close()
