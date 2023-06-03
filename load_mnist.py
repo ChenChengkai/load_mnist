@@ -58,22 +58,75 @@ class MNISTDataset:
 '''
 This is dataset test 
 '''
+# training_dataset = MNISTDataset('mnist/train-images.idx3-ubyte',
+#                                 'mnist/train-labels.idx1-ubyte')
+# testing_dataset = MNISTDataset('mnist/t10k-images.idx3-ubyte',
+#                                'mnist/t10k-labels.idx1-ubyte')
+# print(f'num of training data {len(training_dataset)}')
+# print(f'num of testing data {len(testing_dataset)}')
+# img, label = training_dataset[0]
+# plt.imshow(img)
+# plt.title(f'training label is {label}')
+# plt.savefig(f'./pic/train_{label}.jpg', format='jpeg')
+# plt.show()
+# plt.close()
+
+# img, label = testing_dataset[0]
+# plt.imshow(img)
+# plt.title(f'testing label is {label}')
+# plt.savefig(f'./pic/test_{label}.jpg', format='jpeg')
+# plt.show()
+# plt.close()
+
+
+class DataLoader:
+    def __init__(self, dataset, batch_size) -> None:
+        self.dataset = dataset
+        self.batch_size = batch_size
+
+    def __iter__(self):
+        self.index = np.arange(len(self.dataset))
+        np.random.shuffle(self.index)
+        self.cursor = 0
+        return self
+
+    def __next__(self):
+        begin = self.cursor
+        end = self.cursor+self.batch_size
+        if end > len(self.dataset):
+            raise StopIteration
+        self.cursor = end
+        batched_data = []
+        for index in self.index[begin:end]:
+            item = self.dataset[index]
+            batched_data.append(item)
+        return [np.stack(item, axis=0) for item in list(zip(*batched_data))]
+
+
+'''
+This is dataloader test 
+'''
 training_dataset = MNISTDataset('mnist/train-images.idx3-ubyte',
                                 'mnist/train-labels.idx1-ubyte')
+training_dataloader = DataLoader(dataset=training_dataset, batch_size=3)
+
 testing_dataset = MNISTDataset('mnist/t10k-images.idx3-ubyte',
                                'mnist/t10k-labels.idx1-ubyte')
-print(f'num of training data {len(training_dataset)}')
-print(f'num of testing data {len(testing_dataset)}')
-img, label = training_dataset[0]
-plt.imshow(img)
-plt.title(f'training label is {label}')
-plt.savefig(f'./pic/train_{label}.jpg', format='jpeg')
-plt.show()
-plt.close()
+testing_dataloader = DataLoader(dataset=testing_dataset, batch_size=3)
 
-img, label = testing_dataset[0]
-plt.imshow(img)
-plt.title(f'testing label is {label}')
-plt.savefig(f'./pic/test_{label}.jpg', format='jpeg')
-plt.show()
-plt.close()
+for images, labels in training_dataloader:
+    print(images.shape)
+    print(labels.shape)
+    plt.title(f"train label:{labels[0]}")
+    plt.imshow(images[0])
+    plt.show()
+    break
+
+
+for images, labels in testing_dataloader:
+    print(images.shape)
+    print(labels.shape)
+    plt.title(f"test label:{labels[0]}")
+    plt.imshow(images[0])
+    plt.show()
+    break
